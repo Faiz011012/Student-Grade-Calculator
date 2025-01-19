@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grade Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Student Grade Calculator</h1>
+
+        <!-- Menu -->
+        <div id="menu">
+            <h2>Menu</h2>
+            <button onclick="showDeveloperInfo()">Developer's Info</button>
+            <button onclick="showGradeCalculation()">Grade Calculation</button>
+        </div>
+
+        <!-- Developer Info Section -->
+        <div id="developerInfo" style="display: none;">
+            <h2>Developer's Info</h2>
+            <p>1. (B132310122) [Muhamad Faiz bin Muhamad Yusoff - Programmer Source Code]</p>
+            <p>2. (B132310590) [Muhammad Afiq Haiqal Bin Razmi - Programmer Source Code]</p>
+            <p>3. (B132310008) [Ahamad Hazeeq Itqan Bin Mushni - Flowchart]</p>
+            <p>4. (B132310582) [Muhammad Faris Adam Bin Mohd Fauzi - Implementation]</p>
+            <p>5. (B132310037) [Muhamad Danial Sahir Bin Muhamad Subarjo - Pseudocode]</p>
+            <button onclick="backToMenu()">Back to Menu</button>
+        </div>
+
+        <!-- Grade Calculation Section -->
+        <div id="gradeCalculation" style="display: none;">
+            <h2>Grade Calculation</h2>
+            <label for="numSubjects">Enter the number of subjects: </label>
+            <input type="number" id="numSubjects" min="1" required>
+            <button onclick="startGradeCalculation()">Start</button>
+
+            <div id="subjectsForm"></div>
+
+            <div id="results" style="display: none;">
+                <h3>Result</h3>
+                <table id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>Index</th>
+                            <th>Subject</th>
+                            <th>Credit</th>
+                            <th>Score</th>
+                            <th>Grade</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultBody"></tbody>
+                </table>
+                <div id="gpaResult"></div>
+                <button onclick="backToMenu()">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDeveloperInfo() {
+            document.getElementById('developerInfo').style.display = 'block';
+            document.getElementById('menu').style.display = 'none';
+        }
+
+        function backToMenu() {
+            document.getElementById('developerInfo').style.display = 'none';
+            document.getElementById('gradeCalculation').style.display = 'none';
+            document.getElementById('menu').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function showGradeCalculation() {
+            document.getElementById('gradeCalculation').style.display = 'block';
+            document.getElementById('menu').style.display = 'none';
+        }
+
+        function startGradeCalculation() {
+            let numSubjects = parseInt(document.getElementById('numSubjects').value);
+            if (isNaN(numSubjects) || numSubjects <= 0) {
+                alert('Please enter a valid number of subjects.');
+                return;
+            }
+
+            let subjectsForm = document.getElementById('subjectsForm');
+            subjectsForm.innerHTML = ''; // Clear any previous inputs
+
+            for (let i = 0; i < numSubjects; i++) {
+                subjectsForm.innerHTML += `
+                    <h4>Subject ${i + 1}</h4>
+                    <label for="subjectName${i}">Name of Subject:</label>
+                    <input type="text" id="subjectName${i}" required>
+
+                    <label for="credit${i}">Credit Hours (1-4):</label>
+                    <input type="number" id="credit${i}" min="1" max="4" required>
+
+                    <label for="score${i}">Score (0-100):</label>
+                    <input type="number" id="score${i}" min="0" max="100" required>
+                `;
+            }
+
+            let startButton = document.querySelector('button[onclick="startGradeCalculation()"]');
+            startButton.innerHTML = 'Calculate GPA';
+            startButton.setAttribute('onclick', 'calculateGPA()');
+        }
+
+        function calculateGPA() {
+            let numSubjects = parseInt(document.getElementById('numSubjects').value);
+            let subjects = [];
+            let credits = [];
+            let scores = [];
+            let grades = [];
+            let points = [];
+
+            for (let i = 0; i < numSubjects; i++) {
+                let subjectName = document.getElementById('subjectName' + i).value;
+                let credit = parseInt(document.getElementById('credit' + i).value);
+                let score = parseInt(document.getElementById('score' + i).value);
+
+                if (!subjectName || isNaN(credit) || isNaN(score)) {
+                    alert('Please fill all fields for subject ' + (i + 1));
+                    return;
+                }
+
+                subjects.push(subjectName);
+                credits.push(credit);
+                scores.push(score);
+
+                if (score >= 80) {
+                    grades.push('A');
+                    points.push(4.0);
+                } else if (score >= 75) {
+                    grades.push('A-');
+                    points.push(3.7);
+                } else if (score >= 70) {
+                    grades.push('B+');
+                    points.push(3.3);
+                } else if (score >= 65) {
+                    grades.push('B');
+                    points.push(3.0);
+                } else if (score >= 60) {
+                    grades.push('B-');
+                    points.push(2.7);
+                } else if (score >= 55) {
+                    grades.push('C+');
+                    points.push(2.3);
+                } else if (score >= 50) {
+                    grades.push('C');
+                    points.push(2.0);
+                } else if (score >= 47) {
+                    grades.push('C-');
+                    points.push(1.7);
+                } else if (score >= 44) {
+                    grades.push('D+');
+                    points.push(1.3);
+                } else if (score >= 40) {
+                    grades.push('D');
+                    points.push(1.0);
+                } else {
+                    grades.push('E');
+                    points.push(0.0);
+                }
+            }
+
+            let totalQualityPoints = 0;
+            let totalCredits = 0;
+
+            for (let i = 0; i < numSubjects; i++) {
+                totalQualityPoints += points[i] * credits[i];
+                totalCredits += credits[i];
+            }
+
+            let gpa = totalQualityPoints / totalCredits;
+
+            let resultTableBody = document.getElementById('resultBody');
+            resultTableBody.innerHTML = '';
+
+            for (let i = 0; i < numSubjects; i++) {
+                resultTableBody.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${subjects[i]}</td>
+                        <td>${credits[i]}</td>
+                        <td>${scores[i]}</td>
+                        <td>${grades[i]}</td>
+                        <td>${points[i].toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+
+            let gpaResult = document.getElementById('gpaResult');
+            gpaResult.innerHTML = `
+                <p>Total Credit Hours: ${totalCredits}</p>
+                <p>GPA: ${gpa.toFixed(2)}</p>
+            `;
+
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
